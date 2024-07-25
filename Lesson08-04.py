@@ -18,7 +18,6 @@ def json_to_csv(file: Path) -> None:
         csv_write.writerows(list_rows)
 
 
-
 if __name__ == '__main__':
     PATH = ''
     json_to_csv(Path(PATH))
