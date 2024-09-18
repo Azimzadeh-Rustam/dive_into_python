@@ -3,18 +3,19 @@ import pickle
 from pathlib import Path
 
 
-def pickle_to_csv(file: Path) -> None:
-    with(
-        open(file, 'rb') as f_read,
-        open(f'{file.stem}.csv', 'w', encoding='utf-8', newline='') as f_write
-    ):
-        data = pickle.load(f_read)
-        headers_list = list(data[0].keys())
-        csv_write = csv.DictWriter(f_write, fieldnames=headers_list, dialect='excel-tab', quoting=csv.QUOTE_NONNUMERIC)
-        csv_write.writeheader()
-        csv_write.writerows(data)
+def csv_to_pickle(file: Path) -> None:
+    pickle_list = []
+    with open(file, 'r', newline='', encoding='utf-8') as f_read:
+        csv_file = csv.reader(f_read, dialect='excel-tab')
+        for i, line in enumerate(csv_file):
+            if i == 0:
+                pickle_keys = line
+            else:
+                pickle_dict = {key: value for key, value in zip(pickle_keys, line)}
+                pickle_list.append(pickle_dict)
+    print(pickle.dumps(pickle_list))
 
 
 if __name__ == '__main__':
-    PICKLE_PATH = ''
-    pickle_to_csv(Path(PICKLE_PATH))
+    CSV_PATH = ''
+    csv_to_pickle(Path(CSV_PATH))

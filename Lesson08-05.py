@@ -1,27 +1,17 @@
-import csv
 import json
+import pickle
 from pathlib import Path
 
 
-def csv_to_json(csv_file: Path, json_file: Path) -> None:
-    json_list = []
-    with open(csv_file, 'r', encoding='utf-8', newline='') as f:
-        csv_read = csv.reader(f, dialect='excel-tab')
-        for i, line in enumerate(csv_read):
-            json_dict = {}
-            if i != 0:
-                level, id, name = line
-                json_dict['level'] = int(level)
-                json_dict['id'] = f'{int(id):010}'
-                json_dict['name'] = name.title()
-                json_dict['hash'] = hash(f"{json_dict['id']}{json_dict['name']}")
-                json_list.append(json_dict)
-
-    with open(json_file, 'w', newline='', encoding='utf-8') as f:
-        json.dump(json_list, f, indent=2)
+def json_to_pickle(path: Path) -> None:
+    for file in path.iterdir():
+        if file.is_file() and file.suffix == '.json':
+            with open(file, 'r', encoding='utf-8') as f_read:
+                data = json.load(f_read)
+            with open(f'{file.stem}.pickle', 'wb') as f_write:
+                pickle.dump(data, f_write)
 
 
 if __name__ == '__main__':
-    CSV_PATH = ''
-    JSON_PATH = ''
-    csv_to_json(Path(CSV_PATH), Path(JSON_PATH))
+    FOLDER_PATH = ''
+    json_to_pickle(Path(FOLDER_PATH))

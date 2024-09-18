@@ -3,21 +3,25 @@ import json
 from pathlib import Path
 
 
-def json_to_csv(file: Path) -> None:
-    with open(file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+def csv_to_json(csv_file: Path, json_file: Path) -> None:
+    json_list = []
+    with open(csv_file, 'r', encoding='utf-8', newline='') as f:
+        csv_read = csv.reader(f, dialect='excel-tab')
+        for i, line in enumerate(csv_read):
+            json_dict = {}
+            if i != 0:
+                level, id, name = line
+                json_dict['level'] = int(level)
+                json_dict['id'] = f'{int(id):010}'
+                json_dict['name'] = name.title()
+                json_dict['hash'] = hash(f"{json_dict['id']}{json_dict['name']}")
+                json_list.append(json_dict)
 
-    list_rows = []
-    for level, id_name_dict in data.items():
-        for id, name in id_name_dict.items():
-            list_rows.append({'level': int(level), 'id': int(id), 'name': name})
-
-    with open(f'{file.stem}.csv', 'w', newline='', encoding='utf-8') as f:
-        csv_write = csv.DictWriter(f, fieldnames=['level', 'id', 'name'], dialect='excel-tab')
-        csv_write.writeheader()
-        csv_write.writerows(list_rows)
+    with open(json_file, 'w', newline='', encoding='utf-8') as f:
+        json.dump(json_list, f, indent=2)
 
 
 if __name__ == '__main__':
-    PATH = ''
-    json_to_csv(Path(PATH))
+    CSV_PATH = ''
+    JSON_PATH = ''
+    csv_to_json(Path(CSV_PATH), Path(JSON_PATH))
